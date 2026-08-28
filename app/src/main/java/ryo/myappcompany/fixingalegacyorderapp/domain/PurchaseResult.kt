@@ -15,4 +15,6 @@ object Success : PurchaseResult()
  *
  * @param cause 処理の失敗内容
  */
-class Failure(cause: String) : PurchaseResult()
+class Failure(
+    val cause: String
+) : PurchaseResult()
