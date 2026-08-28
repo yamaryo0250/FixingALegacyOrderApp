@@ -8,7 +8,7 @@ package ryo.myappcompany.fixingalegacyorderapp.ui
  * @param stock 在庫数
  */
 data class FlashSaleUiState(
-    val isLoading: Boolean,
-    val productName: String,
-    val stock: Int
+    val isLoading: Boolean = false,
+    val productName: String = "",
+    val stock: Int = 0
 )
