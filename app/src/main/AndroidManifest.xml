@@ -10,7 +10,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FixingALegacyOrderApp">
+        android:theme="@style/Theme.FixingALegacyOrderApp"
+        android:name=".FixingALegacyOrderApplication">
         <activity
             android:name=".ui.FlashSaleActivity"
             android:exported="true"
