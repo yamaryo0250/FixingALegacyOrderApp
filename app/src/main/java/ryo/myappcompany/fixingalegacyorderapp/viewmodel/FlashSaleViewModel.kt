@@ -77,6 +77,12 @@ class FlashSaleViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d(TAG, "Start purchase item process by clicked.")
 
+            // 多重実行防止
+            if (uiState.value.isLoading) {
+                Log.d(TAG, "onBuyClicked cancel. Because already executed.")
+                return@launch
+            }
+
             _uiState.update { it.copy(isLoading = true) }
 
             val purchaseResult = purchaseItemUseCase("item_123")

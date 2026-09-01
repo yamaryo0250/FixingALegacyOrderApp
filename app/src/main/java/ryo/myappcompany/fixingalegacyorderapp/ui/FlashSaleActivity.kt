@@ -1,6 +1,7 @@
 package ryo.myappcompany.fixingalegacyorderapp.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -18,6 +19,10 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FlashSaleActivity : AppCompatActivity() {
+
+    companion object {
+        val TAG: String = FlashSaleActivity::class.java.simpleName
+    }
 
     private lateinit var viewModel: FlashSaleViewModel
 
@@ -38,6 +43,7 @@ class FlashSaleActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[FlashSaleViewModel::class.java]
 
         btnBuy.setOnClickListener {
+            Log.d(TAG, "button clicked.")
             viewModel.onBuyClicked()
         }
 
@@ -60,7 +66,7 @@ class FlashSaleActivity : AppCompatActivity() {
                         tvStock.text =
                             getString(R.string.msg_stock_quantity, state.stock.toString())
 
-                        btnBuy.isEnabled = state.stock > 0
+                        btnBuy.isEnabled = state.stock > 0 && !state.isLoading
                     }
                 }
 
