@@ -7,12 +7,16 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import dagger.hilt.android.AndroidEntryPoint
 import ryo.myappcompany.fixingalegacyorderapp.R
 import ryo.myappcompany.fixingalegacyorderapp.viewmodel.FlashSaleViewModel
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class FlashSaleActivity : AppCompatActivity() {
 
     private lateinit var viewModel: FlashSaleViewModel
@@ -37,16 +41,33 @@ class FlashSaleActivity : AppCompatActivity() {
             viewModel.onBuyClicked()
         }
 
+        // UIを状態クラスで管理
+        settingUiState()
+    }
+
+    /**
+     * UIの状態クラスを設定
+     *
+     * UI表示内容をFlowで管理するための設定(collect等)
+     */
+    private fun settingUiState() {
         lifecycleScope.launch {
-            viewModel.uiState.collect { state ->
-                progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
-                tvProductName.text = state.productName
-                tvStock.text = "残り在庫: ${state.stock}個"
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.uiState.collect { state ->
+                        progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+                        tvProductName.text = state.productName
+                        tvStock.text =
+                            getString(R.string.msg_stock_quantity, state.stock.toString())
 
-                btnBuy.isEnabled = state.stock > 0
+                        btnBuy.isEnabled = state.stock > 0
+                    }
+                }
 
-                if (state.message.isNotEmpty()) {
-                    Toast.makeText(this@FlashSaleActivity, state.message, Toast.LENGTH_SHORT).show()
+                launch {
+                    viewModel.purchaseEvent.collect { event ->
+                        Toast.makeText(this@FlashSaleActivity, getString(event.message), Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

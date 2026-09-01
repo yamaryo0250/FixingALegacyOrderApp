@@ -4,16 +4,18 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import ryo.myappcompany.fixingalegacyorderapp.R
 import ryo.myappcompany.fixingalegacyorderapp.domain.Failure
 import ryo.myappcompany.fixingalegacyorderapp.domain.ProductInfo
 import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
 import ryo.myappcompany.fixingalegacyorderapp.domain.Success
+import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * 注文関連処理のロジッククラス
  */
-object OrderManager {
+class OrderManager @Inject constructor() {
 
     val TAG: String = OrderManager::class.java.simpleName
 
@@ -54,10 +56,16 @@ object OrderManager {
 
         if (currentStock > 0) {
             currentStock--
+            Log.d(TAG, "currentStock updated →$currentStock")
 
-            return@withContext Success
+            return@withContext Success(ProductInfo(
+                productName = "限定ワイヤレスイヤホン",
+                stock = currentStock
+            ))
         } else {
-            return@withContext Failure("在庫切れです。")
+            Log.d(TAG, "Out of Stock..")
+
+            return@withContext Failure(R.string.msg_out_of_stock)
         }
     }
 }

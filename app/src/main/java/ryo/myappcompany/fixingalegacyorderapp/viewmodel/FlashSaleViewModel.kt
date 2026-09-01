@@ -1,65 +1,103 @@
 package ryo.myappcompany.fixingalegacyorderapp.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ryo.myappcompany.fixingalegacyorderapp.legacy.LegacyOrderManager
-import kotlinx.coroutines.delay
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ryo.myappcompany.fixingalegacyorderapp.R
+import ryo.myappcompany.fixingalegacyorderapp.domain.Failure
+import ryo.myappcompany.fixingalegacyorderapp.domain.Success
+import ryo.myappcompany.fixingalegacyorderapp.ui.FlashSaleUiState
+import ryo.myappcompany.fixingalegacyorderapp.ui.PurchaseEvent
+import ryo.myappcompany.fixingalegacyorderapp.usecase.LoadingProductDetailsUseCase
+import ryo.myappcompany.fixingalegacyorderapp.usecase.PurchaseItemUseCase
+import javax.inject.Inject
 
-data class FlashSaleState(
-    val isLoading: Boolean = false,
-    val productName: String = "",
-    val stock: Int = 0,
-    val message: String = ""
-)
+/**
+ * ViewModel
+ *
+ * @param loadingProductDetailsUseCase 商品詳細情報取得UseCase
+ * @param purchaseItemUseCase 商品購入処理UseCase
+ */
+@HiltViewModel
+class FlashSaleViewModel @Inject constructor(
+    private val loadingProductDetailsUseCase: LoadingProductDetailsUseCase,
+    private val purchaseItemUseCase: PurchaseItemUseCase
+) : ViewModel() {
 
-class FlashSaleViewModel : ViewModel() {
-    private val legacyManager = LegacyOrderManager.getInstance()
+    companion object {
+        val TAG: String = FlashSaleViewModel::class.java.simpleName
+    }
 
-    private val _uiState = MutableStateFlow(FlashSaleState())
-    val uiState: StateFlow<FlashSaleState> = _uiState
+    private val _uiState = MutableStateFlow(FlashSaleUiState())
+    val uiState: StateFlow<FlashSaleUiState> = _uiState
+
+    private val _purchaseEvent = MutableSharedFlow<PurchaseEvent>()
+    val purchaseEvent = _purchaseEvent.asSharedFlow()
 
     init {
         loadProductDetails()
-
-        // レガシーシステムからの在庫更新通知を受け取る
-        legacyManager.addStockListener { newStock ->
-            _uiState.value = _uiState.value.copy(stock = newStock)
-        }
     }
 
+    /**
+     * 商品詳細情報取得
+     */
     private fun loadProductDetails() {
-        _uiState.value = _uiState.value.copy(isLoading = true)
 
         viewModelScope.launch {
-            // APIデータ取得のシミュレート
-            delay(1000)
-            _uiState.value = _uiState.value.copy(
-                isLoading = false,
-                productName = "限定ワイヤレスイヤホン"
-            )
+            Log.d(TAG, "Start load product details.")
+
+            _uiState.update { it.copy(isLoading = true) }
+
+            val productInfo = loadingProductDetailsUseCase()
+
+            Log.d(TAG, "Complete load product details.")
+
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    productName = productInfo.productName,
+                    stock = productInfo.stock
+                )
+            }
         }
     }
 
+    /**
+     * ボタン押下検知時処理
+     */
     fun onBuyClicked() {
-        _uiState.value = _uiState.value.copy(isLoading = true)
 
-        legacyManager.purchaseItem("item_123", object : LegacyOrderManager.PurchaseCallback {
-            override fun onSuccess() {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    message = "購入が完了しました！"
-                )
-            }
+        viewModelScope.launch {
+            Log.d(TAG, "Start purchase item process by clicked.")
 
-            override fun onFailure(error: String) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    message = error
-                )
+            _uiState.update { it.copy(isLoading = true) }
+
+            val purchaseResult = purchaseItemUseCase("item_123")
+
+            _uiState.update { it.copy(isLoading = false) }
+
+            when (purchaseResult) {
+                is Success -> {
+                    _uiState.update { it.copy(stock = purchaseResult.productInfo.stock) }
+
+                    _purchaseEvent.emit(
+                        PurchaseEvent.Success(R.string.msg_purchase_complete)
+                    )
+                }
+
+                is Failure -> {
+                    _purchaseEvent.emit(
+                        PurchaseEvent.Failure(purchaseResult.cause)
+                    )
+                }
             }
-        })
+        }
     }
 }

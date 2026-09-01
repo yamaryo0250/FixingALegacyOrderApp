@@ -5,13 +5,19 @@ package ryo.myappcompany.fixingalegacyorderapp.ui
  */
 sealed interface PurchaseEvent {
 
+    val message: Int
+
     /**
      * 購入完了メッセージ表示用
      */
-    data class Success(val message: String) : PurchaseEvent
+    data class Success(
+        override val message: Int
+    ) : PurchaseEvent
 
     /**
      * 購入エラーメッセージ表示用
      */
-    data class Failure(val message: String) : PurchaseEvent
+    data class Failure(
+        override val message: Int
+    ) : PurchaseEvent
 }

@@ -3,11 +3,12 @@ package ryo.myappcompany.fixingalegacyorderapp.repository
 import ryo.myappcompany.fixingalegacyorderapp.domain.ProductInfo
 import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
 import ryo.myappcompany.fixingalegacyorderapp.manager.OrderManager
+import javax.inject.Inject
 
 /**
  * フラッシュセールリポジトリ 実装
  */
-class FlashSaleRepositoryImpl(
+class FlashSaleRepositoryImpl @Inject constructor(
     private val orderManager: OrderManager
 ) : FlashSaleRepository {
 

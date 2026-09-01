@@ -8,7 +8,9 @@ sealed class PurchaseResult
 /**
  * 購入処理成功
  */
-object Success : PurchaseResult()
+class Success(
+    val productInfo: ProductInfo
+) : PurchaseResult()
 
 /**
  * 購入処理失敗
@@ -16,5 +18,5 @@ object Success : PurchaseResult()
  * @param cause 処理の失敗内容
  */
 class Failure(
-    val cause: String
+    val cause: Int
 ) : PurchaseResult()
