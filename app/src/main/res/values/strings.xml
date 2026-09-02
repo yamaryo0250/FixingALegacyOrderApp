@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">FixingALegacyOrderApp</string>
 <!--    アプリ内表示用-->
+    <string name="msg_flash_sale_in_progress">タイムセール開催中！</string>
     <string name="msg_buy_now">今すぐ購入</string>
     <string name="msg_stock_quantity">残り在庫: %1$s個</string>
     <string name="msg_purchase_complete">購入が完了しました！</string>
     <string name="msg_out_of_stock">在庫切れです。</string>
-    <string name="msg_flash_sale_in_progress">タイムセール開催中！</string>
+    <string name="msg_connection_error">通信エラーが発生しました。</string>
 </resources>

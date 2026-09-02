@@ -4,11 +4,9 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import ryo.myappcompany.fixingalegacyorderapp.R
-import ryo.myappcompany.fixingalegacyorderapp.domain.Failure
 import ryo.myappcompany.fixingalegacyorderapp.domain.ProductInfo
 import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
-import ryo.myappcompany.fixingalegacyorderapp.domain.Success
+import ryo.myappcompany.fixingalegacyorderapp.repository.ApiConnectException
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -52,20 +50,23 @@ class OrderManager @Inject constructor() {
             delay(1500.milliseconds)
         } catch (e: InterruptedException) {
             e.stackTrace
+            return@withContext PurchaseResult.Failure.NetWorkError(ApiConnectException())
         }
 
         if (currentStock > 0) {
             currentStock--
             Log.d(TAG, "currentStock updated →$currentStock")
 
-            return@withContext Success(ProductInfo(
-                productName = "限定ワイヤレスイヤホン",
-                stock = currentStock
-            ))
+            return@withContext PurchaseResult.Success(
+                ProductInfo(
+                    productName = "限定ワイヤレスイヤホン",
+                    stock = currentStock
+                )
+            )
         } else {
             Log.d(TAG, "Out of Stock..")
 
-            return@withContext Failure(R.string.msg_out_of_stock)
+            return@withContext PurchaseResult.Failure.OutOfStock
         }
     }
 }

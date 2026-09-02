@@ -11,8 +11,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ryo.myappcompany.fixingalegacyorderapp.R
-import ryo.myappcompany.fixingalegacyorderapp.domain.Failure
-import ryo.myappcompany.fixingalegacyorderapp.domain.Success
+import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
 import ryo.myappcompany.fixingalegacyorderapp.ui.FlashSaleUiState
 import ryo.myappcompany.fixingalegacyorderapp.ui.PurchaseEvent
 import ryo.myappcompany.fixingalegacyorderapp.usecase.LoadingProductDetailsUseCase
@@ -90,7 +89,7 @@ class FlashSaleViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = false) }
 
             when (purchaseResult) {
-                is Success -> {
+                is PurchaseResult.Success -> {
                     _uiState.update { it.copy(stock = purchaseResult.productInfo.stock) }
 
                     _purchaseEvent.emit(
@@ -98,9 +97,15 @@ class FlashSaleViewModel @Inject constructor(
                     )
                 }
 
-                is Failure -> {
+                is PurchaseResult.Failure.OutOfStock -> {
                     _purchaseEvent.emit(
-                        PurchaseEvent.Failure(purchaseResult.cause)
+                        PurchaseEvent.Failure(R.string.msg_out_of_stock)
+                    )
+                }
+
+                is PurchaseResult.Failure.NetWorkError -> {
+                    _purchaseEvent.emit(
+                        PurchaseEvent.Failure(R.string.msg_connection_error)
                     )
                 }
             }
