@@ -7,9 +7,9 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +24,7 @@ class FlashSaleActivity : AppCompatActivity() {
         val TAG: String = FlashSaleActivity::class.java.simpleName
     }
 
-    private lateinit var viewModel: FlashSaleViewModel
+    private val viewModel: FlashSaleViewModel by viewModels()
 
     private lateinit var tvProductName: TextView
     private lateinit var tvStock: TextView
@@ -39,8 +39,6 @@ class FlashSaleActivity : AppCompatActivity() {
         tvStock = findViewById(R.id.tvStock)
         btnBuy = findViewById(R.id.btnBuy)
         progressBar = findViewById(R.id.progressBar)
-
-        viewModel = ViewModelProvider(this)[FlashSaleViewModel::class.java]
 
         btnBuy.setOnClickListener {
             Log.d(TAG, "button clicked.")
