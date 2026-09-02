@@ -4,9 +4,9 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import ryo.myappcompany.fixingalegacyorderapp.domain.ApiConnectException
 import ryo.myappcompany.fixingalegacyorderapp.domain.ProductInfo
 import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
-import ryo.myappcompany.fixingalegacyorderapp.repository.ApiConnectException
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 

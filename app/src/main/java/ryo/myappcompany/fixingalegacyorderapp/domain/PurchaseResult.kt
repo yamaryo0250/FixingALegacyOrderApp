@@ -1,6 +1,5 @@
 package ryo.myappcompany.fixingalegacyorderapp.domain
 
-import ryo.myappcompany.fixingalegacyorderapp.repository.ApiConnectException
 
 /**
  * 購入処理結果

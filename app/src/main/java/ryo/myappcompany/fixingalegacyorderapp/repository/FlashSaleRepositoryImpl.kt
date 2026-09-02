@@ -1,5 +1,6 @@
 package ryo.myappcompany.fixingalegacyorderapp.repository
 
+import ryo.myappcompany.fixingalegacyorderapp.domain.ApiConnectException
 import ryo.myappcompany.fixingalegacyorderapp.domain.ProductInfo
 import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
 import ryo.myappcompany.fixingalegacyorderapp.manager.OrderManager
@@ -47,5 +48,3 @@ class FlashSaleRepositoryImpl @Inject constructor(
         }
     }
 }
-
-class ApiConnectException(cause: Throwable? = null) : Exception(cause)
