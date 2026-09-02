@@ -44,7 +44,7 @@ class FlashSaleRepositoryImpl @Inject constructor(
                 throw e
             }
 
-            throw ApiConnectException(e)
+            PurchaseResult.Failure.NetWorkError(ApiConnectException(e))
         }
     }
 }
