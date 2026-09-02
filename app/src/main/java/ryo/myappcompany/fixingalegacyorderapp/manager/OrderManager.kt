@@ -18,7 +18,7 @@ class OrderManager @Inject constructor() {
     val TAG: String = OrderManager::class.java.simpleName
 
     // 在庫数
-    var currentStock = 3
+    private var currentStock = 3
 
     /**
      * 商品詳細情報取得
