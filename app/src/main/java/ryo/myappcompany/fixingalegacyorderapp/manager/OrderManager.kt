@@ -4,7 +4,6 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import ryo.myappcompany.fixingalegacyorderapp.domain.ApiConnectException
 import ryo.myappcompany.fixingalegacyorderapp.domain.ProductInfo
 import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
 import javax.inject.Inject
@@ -45,13 +44,8 @@ class OrderManager @Inject constructor() {
     suspend fun purchaseItem(itemId: String): PurchaseResult = withContext(Dispatchers.IO) {
         Log.d(TAG, "Execute purchaseItem process.")
 
-        try {
-            // 通信遅延のシミュレート
-            delay(1500.milliseconds)
-        } catch (e: InterruptedException) {
-            e.stackTrace
-            return@withContext PurchaseResult.Failure.NetWorkError(ApiConnectException())
-        }
+        // 通信遅延のシミュレート
+        delay(1500.milliseconds)
 
         if (currentStock > 0) {
             currentStock--
