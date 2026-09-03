@@ -4,10 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ryo.myappcompany.fixingalegacyorderapp.R
@@ -37,8 +37,8 @@ class FlashSaleViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(FlashSaleUiState())
     val uiState: StateFlow<FlashSaleUiState> = _uiState
 
-    private val _purchaseEvent = MutableSharedFlow<PurchaseEvent>()
-    val purchaseEvent = _purchaseEvent.asSharedFlow()
+    private val _purchaseEvent = Channel<PurchaseEvent>(Channel.BUFFERED)
+    val purchaseEvent = _purchaseEvent.receiveAsFlow()
 
     init {
         loadProductDetails()
@@ -92,19 +92,19 @@ class FlashSaleViewModel @Inject constructor(
                 is PurchaseResult.Success -> {
                     _uiState.update { it.copy(stock = purchaseResult.productInfo.stock) }
 
-                    _purchaseEvent.emit(
+                    _purchaseEvent.send(
                         PurchaseEvent.Success(R.string.msg_purchase_complete)
                     )
                 }
 
                 is PurchaseResult.Failure.OutOfStock -> {
-                    _purchaseEvent.emit(
+                    _purchaseEvent.send(
                         PurchaseEvent.Failure(R.string.msg_out_of_stock)
                     )
                 }
 
                 is PurchaseResult.Failure.NetWorkError -> {
-                    _purchaseEvent.emit(
+                    _purchaseEvent.send(
                         PurchaseEvent.Failure(R.string.msg_connection_error)
                     )
                 }
