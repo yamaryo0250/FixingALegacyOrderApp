@@ -9,11 +9,13 @@ import kotlinx.coroutines.withContext
 import ryo.myappcompany.fixingalegacyorderapp.domain.ProductInfo
 import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * 注文関連処理のロジッククラス
  */
+@Singleton
 class OrderManager @Inject constructor() {
 
     companion object {
