@@ -34,10 +34,14 @@ class OrderManager @Inject constructor() {
 
         // APIデータ取得のシミュレート
         delay(1000.milliseconds)
-        return@withContext ProductInfo(
-            productName = "限定ワイヤレスイヤホン",
-            stock = currentStock
-        )
+
+        // 在庫管理数参照の排他制御
+        return@withContext mutex.withLock {
+            ProductInfo(
+                productName = "限定ワイヤレスイヤホン",
+                stock = currentStock
+            )
+        }
     }
 
     /**
