@@ -31,7 +31,7 @@ class FlashSaleViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        val TAG: String = FlashSaleViewModel::class.java.simpleName
+        private const val TAG: String = "FlashSaleViewModel"
     }
 
     private val _uiState = MutableStateFlow(FlashSaleUiState())

@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 class FlashSaleActivity : AppCompatActivity() {
 
     companion object {
-        val TAG: String = FlashSaleActivity::class.java.simpleName
+        private const val TAG: String = "FlashSaleActivity"
     }
 
     private val viewModel: FlashSaleViewModel by viewModels()
