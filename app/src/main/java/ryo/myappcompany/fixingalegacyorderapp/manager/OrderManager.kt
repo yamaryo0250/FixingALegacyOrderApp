@@ -16,7 +16,9 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 class OrderManager @Inject constructor() {
 
-    val TAG: String = OrderManager::class.java.simpleName
+    companion object {
+        private const val TAG: String = "OrderManager"
+    }
 
     // 在庫数
     private var currentStock = 3
