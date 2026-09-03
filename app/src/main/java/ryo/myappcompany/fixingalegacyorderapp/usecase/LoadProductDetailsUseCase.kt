@@ -9,7 +9,7 @@ import javax.inject.Inject
  *
  * @param flashSaleRepository
  */
-class LoadingProductDetailsUseCase @Inject constructor(
+class LoadProductDetailsUseCase @Inject constructor(
     private val flashSaleRepository: FlashSaleRepository
 ) {
     suspend operator fun invoke(): ProductInfo {

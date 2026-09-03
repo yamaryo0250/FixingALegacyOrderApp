@@ -14,19 +14,19 @@ import ryo.myappcompany.fixingalegacyorderapp.R
 import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
 import ryo.myappcompany.fixingalegacyorderapp.ui.FlashSaleUiState
 import ryo.myappcompany.fixingalegacyorderapp.ui.PurchaseEvent
-import ryo.myappcompany.fixingalegacyorderapp.usecase.LoadingProductDetailsUseCase
+import ryo.myappcompany.fixingalegacyorderapp.usecase.LoadProductDetailsUseCase
 import ryo.myappcompany.fixingalegacyorderapp.usecase.PurchaseItemUseCase
 import javax.inject.Inject
 
 /**
  * ViewModel
  *
- * @param loadingProductDetailsUseCase 商品詳細情報取得UseCase
+ * @param loadProductDetailsUseCase 商品詳細情報取得UseCase
  * @param purchaseItemUseCase 商品購入処理UseCase
  */
 @HiltViewModel
 class FlashSaleViewModel @Inject constructor(
-    private val loadingProductDetailsUseCase: LoadingProductDetailsUseCase,
+    private val loadProductDetailsUseCase: LoadProductDetailsUseCase,
     private val purchaseItemUseCase: PurchaseItemUseCase
 ) : ViewModel() {
 
@@ -54,7 +54,7 @@ class FlashSaleViewModel @Inject constructor(
 
             _uiState.update { it.copy(isLoading = true) }
 
-            val productInfo = loadingProductDetailsUseCase()
+            val productInfo = loadProductDetailsUseCase()
 
             Log.d(TAG, "Complete load product details.")
 
