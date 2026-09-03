@@ -3,6 +3,8 @@ package ryo.myappcompany.fixingalegacyorderapp.manager
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import ryo.myappcompany.fixingalegacyorderapp.domain.ProductInfo
 import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
@@ -18,6 +20,9 @@ class OrderManager @Inject constructor() {
 
     // 在庫数
     private var currentStock = 3
+
+    // 在庫数管理への同時アクセス防止(排他制御)
+    private val mutex = Mutex()
 
     /**
      * 商品詳細情報取得
@@ -47,20 +52,23 @@ class OrderManager @Inject constructor() {
         // 通信遅延のシミュレート
         delay(1500.milliseconds)
 
-        if (currentStock > 0) {
-            currentStock--
-            Log.d(TAG, "currentStock updated →$currentStock")
+        // 在庫管理数操作の排他制御
+        mutex.withLock {
+            if (currentStock > 0) {
+                currentStock--
+                Log.d(TAG, "currentStock updated →$currentStock")
 
-            return@withContext PurchaseResult.Success(
-                ProductInfo(
-                    productName = "限定ワイヤレスイヤホン",
-                    stock = currentStock
+                return@withContext PurchaseResult.Success(
+                    ProductInfo(
+                        productName = "限定ワイヤレスイヤホン",
+                        stock = currentStock
+                    )
                 )
-            )
-        } else {
-            Log.d(TAG, "Out of Stock..")
+            } else {
+                Log.d(TAG, "Out of Stock..")
 
-            return@withContext PurchaseResult.Failure.OutOfStock
+                return@withContext PurchaseResult.Failure.OutOfStock
+            }
         }
     }
 }
