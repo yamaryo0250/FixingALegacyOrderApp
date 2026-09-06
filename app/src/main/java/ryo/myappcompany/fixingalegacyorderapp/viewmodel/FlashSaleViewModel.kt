@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import ryo.myappcompany.fixingalegacyorderapp.R
 import ryo.myappcompany.fixingalegacyorderapp.domain.PurchaseResult
 import ryo.myappcompany.fixingalegacyorderapp.ui.FlashSaleUiState
-import ryo.myappcompany.fixingalegacyorderapp.ui.PurchaseEvent
+import ryo.myappcompany.fixingalegacyorderapp.ui.FlashSaleUiEvent
 import ryo.myappcompany.fixingalegacyorderapp.usecase.LoadProductDetailsUseCase
 import ryo.myappcompany.fixingalegacyorderapp.usecase.PurchaseItemUseCase
 import javax.inject.Inject
@@ -37,8 +37,8 @@ class FlashSaleViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(FlashSaleUiState())
     val uiState: StateFlow<FlashSaleUiState> = _uiState
 
-    private val _purchaseEvent = Channel<PurchaseEvent>(Channel.BUFFERED)
-    val purchaseEvent = _purchaseEvent.receiveAsFlow()
+    private val _flashSaleUiEvent = Channel<FlashSaleUiEvent>(Channel.BUFFERED)
+    val flashSaleUiEvent = _flashSaleUiEvent.receiveAsFlow()
 
     init {
         loadProductDetails()
@@ -54,15 +54,32 @@ class FlashSaleViewModel @Inject constructor(
 
             _uiState.update { it.copy(isLoading = true) }
 
-            val productInfo = loadProductDetailsUseCase()
+            try {
+                val productInfo = loadProductDetailsUseCase()
 
-            Log.d(TAG, "Complete load product details.")
+                Log.d(TAG, "Complete load product details.")
 
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    productName = productInfo.productName,
-                    stock = productInfo.stock
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        productName = productInfo.productName,
+                        stock = productInfo.stock
+                    )
+                }
+            } catch (e: Exception) {
+                if (e is kotlinx.coroutines.CancellationException) {
+                    throw e
+                }
+
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        productName = "-"
+                    )
+                }
+
+                _flashSaleUiEvent.send(
+                    FlashSaleUiEvent.Failure(R.string.msg_connection_error)
                 )
             }
         }
@@ -92,20 +109,20 @@ class FlashSaleViewModel @Inject constructor(
                 is PurchaseResult.Success -> {
                     _uiState.update { it.copy(stock = purchaseResult.productInfo.stock) }
 
-                    _purchaseEvent.send(
-                        PurchaseEvent.Success(R.string.msg_purchase_complete)
+                    _flashSaleUiEvent.send(
+                        FlashSaleUiEvent.Success(R.string.msg_purchase_complete)
                     )
                 }
 
                 is PurchaseResult.Failure.OutOfStock -> {
-                    _purchaseEvent.send(
-                        PurchaseEvent.Failure(R.string.msg_out_of_stock)
+                    _flashSaleUiEvent.send(
+                        FlashSaleUiEvent.Failure(R.string.msg_out_of_stock)
                     )
                 }
 
                 is PurchaseResult.Failure.NetWorkError -> {
-                    _purchaseEvent.send(
-                        PurchaseEvent.Failure(R.string.msg_connection_error)
+                    _flashSaleUiEvent.send(
+                        FlashSaleUiEvent.Failure(R.string.msg_connection_error)
                     )
                 }
             }

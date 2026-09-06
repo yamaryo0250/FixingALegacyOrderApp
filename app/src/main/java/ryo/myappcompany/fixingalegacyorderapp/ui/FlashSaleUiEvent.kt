@@ -1,23 +1,23 @@
 package ryo.myappcompany.fixingalegacyorderapp.ui
 
 /**
- * 購入処理のイベントクラス
+ * イベントクラス
  */
-sealed interface PurchaseEvent {
+sealed interface FlashSaleUiEvent {
 
     val message: Int
 
     /**
-     * 購入完了メッセージ表示用
+     * 完了メッセージ表示用
      */
     data class Success(
         override val message: Int
-    ) : PurchaseEvent
+    ) : FlashSaleUiEvent
 
     /**
-     * 購入エラーメッセージ表示用
+     * エラーメッセージ表示用
      */
     data class Failure(
         override val message: Int
-    ) : PurchaseEvent
+    ) : FlashSaleUiEvent
 }

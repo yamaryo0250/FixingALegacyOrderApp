@@ -69,7 +69,7 @@ class FlashSaleActivity : AppCompatActivity() {
                 }
 
                 launch {
-                    viewModel.purchaseEvent.collect { event ->
+                    viewModel.flashSaleUiEvent.collect { event ->
                         Toast.makeText(this@FlashSaleActivity, getString(event.message), Toast.LENGTH_SHORT).show()
                     }
                 }
